@@ -1,0 +1,30 @@
+# Java class files
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Maven
+target/
+!src/main/resources/
+!src/test/resources/
+.mvn/
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Mac system files
+.DS_Store
+
+# Environment
+.env
