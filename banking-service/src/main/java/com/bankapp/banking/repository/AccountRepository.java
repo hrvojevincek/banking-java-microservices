@@ -14,5 +14,11 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     Optional<Account> findByShareableId(String shareableId);
 
-    Optional<Account> findByAppwriteItemId(String appwriteItemId);
+    List<Account> findByUserIdAndActive(String userId, boolean active);
+
+    List<Account> findByType(String type);
+
+    List<Account> findByInstitutionId(String institutionId);
+
+    Optional<Account> findByUserIdAndId(String userId, String id);
 }

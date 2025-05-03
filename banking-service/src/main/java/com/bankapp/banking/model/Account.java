@@ -1,5 +1,10 @@
 package com.bankapp.banking.model;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -23,8 +28,15 @@ public class Account {
     private String subtype;
 
     @Column(unique = true)
-    private String appwriteItemId;
-
-    @Column(unique = true)
     private String shareableId;
+
+    private String userId;
+    private boolean active;
+    private String status;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
