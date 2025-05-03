@@ -1,6 +1,6 @@
 spring:
   application:
-    name: userservice
+    name: user-service
   datasource:
     url: jdbc:postgresql://localhost:5432/banking-user-db
     username: hrvojevincek
@@ -9,3 +9,8 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+eureka:
+  client:
+    serviceUrl:
+      defaultzone: http://localhost:8761/eureka

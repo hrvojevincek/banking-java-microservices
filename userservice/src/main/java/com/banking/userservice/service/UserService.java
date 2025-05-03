@@ -1,5 +1,8 @@
 package com.banking.userservice.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,5 +77,28 @@ public class UserService {
         userResponse.setUpdatedAt(user.getUpdatedAt());
 
         return userResponse;
+    }
+    
+    public List<UserResponse> getAllUsers() {
+        List<User> users = repository.findAll();
+        return users.stream()
+                .map(user -> {
+                    UserResponse response = new UserResponse();
+                    response.setId(user.getId());
+                    response.setEmail(user.getEmail());
+                    response.setPassword(user.getPassword());
+                    response.setFirstName(user.getFirstName());
+                    response.setLastName(user.getLastName());
+                    response.setAddress(user.getAddress());
+                    response.setCity(user.getCity());
+                    response.setState(user.getState());
+                    response.setPostalCode(user.getPostalCode());
+                    response.setDateOfBirth(user.getDateOfBirth());
+                    response.setSsn(user.getSsn());
+                    response.setCreatedAt(user.getCreatedAt());
+                    response.setUpdatedAt(user.getUpdatedAt());
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 }
