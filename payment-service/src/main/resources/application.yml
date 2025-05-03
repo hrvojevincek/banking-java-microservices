@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: jdbc:h2:mem:paymentdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8082
+
+# For local development
+aws:
+  paramstore:
+    enabled: false
+  region: eu-central-1
+
+# Stripe configuration (for local development)
+stripe:
+  api-key: test-api-key
+  webhook-secret: test-webhook-secret
