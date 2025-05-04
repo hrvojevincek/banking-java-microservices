@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,13 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.Authenticat
 @Profile({ "dev", "test" }) // Use this service in dev and test profiles
 public class MockCognitoService extends CognitoService {
 
-    // Store registered users in memory for testing
+    // Store registered users in memory for testing - map email to password
     private Map<String, String> registeredUsers = new HashMap<>();
 
-    public MockCognitoService() {
-        super("eu-central-1"); // Default region
+    public MockCognitoService(@Value("${aws.region}") String region) {
+        super(region); // Use configured region
+        // MockCognitoService doesn't actually use the clientSecret since it doesn't
+        // call real Cognito APIs
     }
 
     @Override
@@ -34,7 +37,7 @@ public class MockCognitoService extends CognitoService {
         // Generate a mock Cognito user ID
         String cognitoUserId = UUID.randomUUID().toString();
 
-        // Store user credentials for login simulation
+        // Store user credentials for login simulation - using email as the key
         registeredUsers.put(email, password);
 
         System.out.println("MOCK COGNITO: Registered user " + email + " with ID " + cognitoUserId);

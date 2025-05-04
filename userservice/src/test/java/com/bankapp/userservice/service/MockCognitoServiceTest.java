@@ -18,7 +18,7 @@ public class MockCognitoServiceTest {
 
     @BeforeEach
     void setUp() {
-        mockCognitoService = new MockCognitoService();
+        mockCognitoService = new MockCognitoService("eu-central-1");
     }
 
     @Test
