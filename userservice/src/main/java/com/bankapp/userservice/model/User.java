@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(unique = true)
+    private String cognitoUserId;
+
+    @Column(nullable = true)
+    private Boolean emailVerified;
+
+    @Column(nullable = true)
+    private String cognitoUserStatus;
+
     @Column(unique = true, nullable = false)
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
@@ -39,30 +49,28 @@ public class User {
     @Size(min = 3, message = "Last name must be at least 3 characters")
     private String lastName;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Transient
     private String password;
-    
+
     @NotBlank(message = "Address is required")
     @Size(max = 50, message = "Address must be at most 50 characters")
     private String address;
-    
+
     @NotBlank(message = "City is required")
     @Size(max = 50, message = "City must be at most 50 characters")
     private String city;
-    
+
     @NotBlank(message = "State is required")
     @Size(min = 2, max = 2, message = "State must be exactly 2 characters")
     private String state;
-    
+
     @NotBlank(message = "Postal code is required")
     @Size(min = 3, max = 6, message = "Postal code must be between 3 and 6 characters")
     private String postalCode;
-    
+
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
-    
+
     @NotBlank(message = "SSN is required")
     @Size(min = 3, message = "SSN must be at least 3 characters")
     private String ssn;

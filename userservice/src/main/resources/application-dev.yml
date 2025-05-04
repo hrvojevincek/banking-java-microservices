@@ -1,0 +1,9 @@
+aws:
+  region: ${AWS_REGION:eu-central-1}
+  cognito:
+    # These are placeholder values for development
+    # For security, provide actual values via environment variables
+    userPoolId: ${COGNITO_USER_POOL_ID:placeholder-pool-id}
+    clientId: ${COGNITO_CLIENT_ID:placeholder-client-id}
+    domain: ${COGNITO_DOMAIN:https://placeholder-domain.auth.eu-central-1.amazoncognito.com}
+    logout-redirect: ${COGNITO_LOGOUT_REDIRECT:http://localhost:3000}

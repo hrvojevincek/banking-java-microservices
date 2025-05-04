@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: user-service
+  profiles:
+    active: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/banking-user-db
     username: hrvojevincek
@@ -12,7 +14,34 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        # This will help with database schema modifications
+        schema_update:
+          unique_constraint_strategy: SKIP
+  security:
+    oauth2:
+      client:
+        registration:
+          cognito:
+            client-id: ${aws.cognito.clientId}
+            # Add client-secret if your client has one
+            # client-secret: ${aws.cognito.clientSecret}
+            scope:
+              - openid
+              - email
+              - profile
+            redirect-uri: http://localhost:3000/api/auth/callback/cognito
+        provider:
+          cognito:
+            issuerUri: https://cognito-idp.${aws.region}.amazonaws.com/${aws.cognito.userPoolId}
+            user-name-attribute: username
+      resourceserver:
+        jwt:
+          issuer-uri: https://cognito-idp.${aws.region}.amazonaws.com/${aws.cognito.userPoolId}
+          jwk-set-uri: https://cognito-idp.${aws.region}.amazonaws.com/${aws.cognito.userPoolId}/.well-known/jwks.json
+
+# AWS config moved to profile-specific files (application-dev.yml, application-prod.yml)
 aws:
   paramstore:
     enabled: false
-  region: eu-central-1
