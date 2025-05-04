@@ -1,5 +1,6 @@
 package com.bankapp.userservice.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,11 +35,16 @@ public class UserService {
         }
 
         // Register with Cognito first
-        String cognitoUserId = cognitoService.registerUser(
+        String cognitoResponse = cognitoService.registerUser(
                 request.getEmail(),
                 request.getPassword(),
                 request.getFirstName(),
                 request.getLastName());
+
+        // Parse the response which now includes both userId and username
+        String[] cognitoParts = cognitoResponse.split(":");
+        String cognitoUserId = cognitoParts[0];
+        String cognitoUsername = cognitoParts[1];
 
         User user = new User();
         user.setFirstName(request.getFirstName());
@@ -53,6 +59,7 @@ public class UserService {
 
         // Set Cognito fields
         user.setCognitoUserId(cognitoUserId);
+        user.setCognitoUsername(cognitoUsername);
         user.setEmailVerified(false);
         user.setCognitoUserStatus("UNCONFIRMED");
 
@@ -85,11 +92,67 @@ public class UserService {
         return mapUserToResponse(user);
     }
 
+    public UserResponse getUserByEmail(String email) {
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return mapUserToResponse(user);
+    }
+
+    public UserResponse getUserByCognitoUsername(String cognitoUsername) {
+        User user = repository.findByCognitoUsername(cognitoUsername)
+                .orElseThrow(() -> new RuntimeException("User not found with cognitoUsername: " + cognitoUsername));
+
+        return mapUserToResponse(user);
+    }
+
+    public UserResponse getUserByCognitoUserId(String cognitoUserId) {
+        User user = repository.findByCognitoUserId(cognitoUserId)
+                .orElseThrow(() -> new RuntimeException("User not found with cognitoUserId: " + cognitoUserId));
+
+        return mapUserToResponse(user);
+    }
+
     public List<UserResponse> getAllUsers() {
         List<User> users = repository.findAll();
         return users.stream()
                 .map(this::mapUserToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void verifyEmail(String email, String code) {
+        try {
+            // Get user to retrieve Cognito username
+            User user = repository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Call Cognito to confirm signup with the stored username
+            cognitoService.confirmSignUp(user.getCognitoUsername(), code);
+
+            // Update user status in our database
+            user.setEmailVerified(true);
+            user.setCognitoUserStatus("CONFIRMED");
+            repository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to verify email: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean deleteUnverifiedUser(String email) {
+        return repository.findByEmail(email)
+                .filter(user -> !Boolean.TRUE.equals(user.getEmailVerified()))
+                .map(user -> {
+                    repository.delete(user);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    public int cleanupUnverifiedUsers(LocalDateTime olderThan) {
+        List<User> unverifiedUsers = repository.findByEmailVerifiedFalseAndCreatedAtBefore(olderThan);
+        int count = unverifiedUsers.size();
+        repository.deleteAll(unverifiedUsers);
+        return count;
     }
 
     private UserResponse mapUserToResponse(User user) {

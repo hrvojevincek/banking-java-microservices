@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -113,7 +111,8 @@ public class CognitoService {
                     .build();
 
             SignUpResponse response = cognitoClient.signUp(signUpRequest);
-            return response.userSub();
+            // Return both the Cognito sub and generated username
+            return response.userSub() + ":" + username;
         } catch (CognitoIdentityProviderException e) {
             throw new RuntimeException("Error registering user with Cognito: " + e.getMessage(), e);
         }
@@ -127,27 +126,30 @@ public class CognitoService {
             authParams.put("PASSWORD", password);
             authParams.put("SECRET_HASH", calculateSecretHash(email)); // Add SECRET_HASH
 
-            AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
-                    .authFlow(AuthFlowType.ADMIN_USER_PASSWORD_AUTH)
+            // Use InitiateAuthRequest instead of AdminInitiateAuthRequest
+            software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest authRequest = software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest
+                    .builder()
+                    .authFlow(AuthFlowType.USER_PASSWORD_AUTH)
                     .clientId(clientId)
-                    .userPoolId(userPoolId)
                     .authParameters(authParams)
                     .build();
 
-            AdminInitiateAuthResponse response = cognitoClient.adminInitiateAuth(authRequest);
+            // Call initiateAuth instead of adminInitiateAuth
+            software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthResponse response = cognitoClient
+                    .initiateAuth(authRequest);
             return response.authenticationResult();
         } catch (CognitoIdentityProviderException e) {
             throw new RuntimeException("Authentication failed: " + e.getMessage(), e);
         }
     }
 
-    public void confirmSignUp(String email, String confirmationCode) {
+    public void confirmSignUp(String username, String confirmationCode) {
         try {
             ConfirmSignUpRequest confirmSignUpRequest = ConfirmSignUpRequest.builder()
                     .clientId(clientId)
-                    .username(email) // Use email for confirmation
+                    .username(username) // Use provided username
                     .confirmationCode(confirmationCode)
-                    .secretHash(calculateSecretHash(email))
+                    .secretHash(calculateSecretHash(username))
                     .build();
 
             cognitoClient.confirmSignUp(confirmSignUpRequest);

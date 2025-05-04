@@ -36,13 +36,15 @@ public class MockCognitoService extends CognitoService {
     public String registerUser(String email, String password, String firstName, String lastName) {
         // Generate a mock Cognito user ID
         String cognitoUserId = UUID.randomUUID().toString();
+        // Generate a mock username like real service
+        String username = "user-" + UUID.randomUUID().toString().substring(0, 8);
 
         // Store user credentials for login simulation - using email as the key
         registeredUsers.put(email, password);
 
         System.out.println("MOCK COGNITO: Registered user " + email + " with ID " + cognitoUserId);
 
-        return cognitoUserId;
+        return cognitoUserId + ":" + username;
     }
 
     @Override
@@ -70,8 +72,8 @@ public class MockCognitoService extends CognitoService {
     }
 
     @Override
-    public void confirmSignUp(String email, String confirmationCode) {
+    public void confirmSignUp(String username, String confirmationCode) {
         // No-op for mock implementation
-        System.out.println("MOCK COGNITO: Confirmed signup for user " + email);
+        System.out.println("MOCK COGNITO: Confirmed signup for user " + username);
     }
 }

@@ -30,6 +30,9 @@ public class User {
     @Column(unique = true)
     private String cognitoUserId;
 
+    @Column(unique = true)
+    private String cognitoUsername;
+
     @Column(nullable = true)
     private Boolean emailVerified;
 

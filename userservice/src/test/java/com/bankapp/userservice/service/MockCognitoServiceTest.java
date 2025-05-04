@@ -3,6 +3,7 @@ package com.bankapp.userservice.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,18 +25,28 @@ public class MockCognitoServiceTest {
     @Test
     void testRegisterUser() {
         // Register a user
-        String cognitoUserId = mockCognitoService.registerUser(
+        String result = mockCognitoService.registerUser(
                 TEST_EMAIL,
                 TEST_PASSWORD,
                 TEST_FIRST_NAME,
                 TEST_LAST_NAME);
 
-        // Verify that a Cognito user ID was generated
-        assertNotNull(cognitoUserId);
+        // Verify that a result was generated
+        assertNotNull(result);
 
-        // Ensure ID is in UUID format (just checking basic characteristics)
+        // Split the result into cognitoUserId and username
+        String[] parts = result.split(":");
+        assertEquals(2, parts.length);
+
+        String cognitoUserId = parts[0];
+        String username = parts[1];
+
+        // Verify cognitoUserId is in UUID format
         assertEquals(36, cognitoUserId.length());
         assertEquals(5, cognitoUserId.split("-").length);
+
+        // Verify username has expected format
+        assertTrue(username.startsWith("user-"));
     }
 
     @Test

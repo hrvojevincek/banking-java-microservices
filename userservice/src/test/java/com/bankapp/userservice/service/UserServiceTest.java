@@ -68,8 +68,11 @@ public class UserServiceTest {
         registerRequest.setDateOfBirth(TEST_DOB);
         registerRequest.setSsn(TEST_SSN);
 
+        // Mock Cognito response with format "cognitoUserId:username"
+        String mockCognitoUsername = "user-test123";
+        String mockCognitoResponse = TEST_COGNITO_ID + ":" + mockCognitoUsername;
         when(cognitoService.registerUser(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(TEST_COGNITO_ID);
+                .thenReturn(mockCognitoResponse);
 
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User savedUser = invocation.getArgument(0);
