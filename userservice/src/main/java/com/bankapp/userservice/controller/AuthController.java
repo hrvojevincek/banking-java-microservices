@@ -28,7 +28,8 @@ public class AuthController {
     @Value("${aws.cognito.clientId}")
     private String clientId;
 
-    @Value("${spring.security.oauth2.client.registration.cognito.client-secret:}")
+    // Use a default empty value if the property is not found
+    @Value("${aws.cognito.clientSecret:}")
     private String clientSecret;
 
     public AuthController(RestTemplate restTemplate) {
@@ -45,7 +46,7 @@ public class AuthController {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "authorization_code");
         formData.add("client_id", clientId);
-        if (!clientSecret.isEmpty()) {
+        if (clientSecret != null && !clientSecret.isEmpty()) {
             formData.add("client_secret", clientSecret);
         }
         formData.add("code", request.getCode());

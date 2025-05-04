@@ -36,3 +36,6 @@ build/
 .env
 .env.*
 !.env.example
+
+**/application-dev.yml
+**/application-prod.yml

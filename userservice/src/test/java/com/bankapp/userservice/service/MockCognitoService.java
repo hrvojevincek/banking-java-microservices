@@ -13,10 +13,13 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.Authenticat
 /**
  * A mock implementation of CognitoService for testing purposes.
  * This avoids making actual AWS Cognito API calls.
+ * 
+ * NOTE: This service is only activated in the "dev" or "test" profiles
+ * and should never be used in production.
  */
 @Service
 @Primary
-@Profile("dev") // Use this service in dev profile
+@Profile({ "dev", "test" }) // Use this service in dev and test profiles
 public class MockCognitoService extends CognitoService {
 
     // Store registered users in memory for testing

@@ -38,9 +38,13 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        // For troubleshooting - allow ALL endpoints without authentication
+                        // Allow health check and actuator endpoints
+                        .requestMatchers("/actuator/**", "/health").permitAll()
+                        // For development, allowing all requests temporarily
+                        // In production, this should be changed to .authenticated()
                         .anyRequest().permitAll())
-                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/", true))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(cognitoJwtAuthenticationConverter)))
                 .logout(logout -> logout.logoutSuccessHandler(cognitoLogoutHandler));

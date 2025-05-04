@@ -25,8 +25,7 @@ spring:
         registration:
           cognito:
             client-id: ${aws.cognito.clientId}
-            # Add client-secret if your client has one
-            # client-secret: ${aws.cognito.clientSecret}
+            client-secret: ${aws.cognito.clientSecret:}
             scope:
               - openid
               - email

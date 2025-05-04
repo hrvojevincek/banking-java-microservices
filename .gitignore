@@ -28,3 +28,7 @@ out/
 
 # Environment
 .env
+
+# Application configuration with sensitive data
+**/application-dev.yml
+**/application-prod.yml

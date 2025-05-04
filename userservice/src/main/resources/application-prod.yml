@@ -1,7 +1,0 @@
-aws:
-  region: ${AWS_REGION}
-  cognito:
-    userPoolId: ${COGNITO_USER_POOL_ID}
-    clientId: ${COGNITO_CLIENT_ID}
-    domain: ${COGNITO_DOMAIN}
-    logout-redirect: ${COGNITO_LOGOUT_REDIRECT}
